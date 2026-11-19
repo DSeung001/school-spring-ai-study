@@ -1,6 +1,6 @@
 # 검증 기록
 
-- 브랜치: main
+- 브랜치: spring-mvc-crud
 - JDK 21 / Gradle Wrapper 8.14.3
 - clean build: 통과
 - 자동 검증: Spring 애플리케이션 컨텍스트 시작

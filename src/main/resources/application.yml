@@ -1,5 +1,31 @@
 spring:
   application:
     name: school-qa
+  http:
+    client:
+      connect-timeout: 5s
+      read-timeout: 120s
+  ai:
+    model:
+      chat: ollama
+      embedding: ollama
+    retry:
+      max-attempts: 1
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      init:
+        pull-model-strategy: never
+      chat:
+        options:
+          model: qwen3:4b-instruct
+          temperature: 0.1
+          num-predict: 400
+      embedding:
+        options:
+          model: bge-m3
 server:
   port: 8080
+app:
+  system-prompt: >-
+    너는 학교 안내 도우미다. 고등학생에게 설명하듯 한국어 존댓말 두세 문장으로 답한다.
+    모르는 학교 정보는 지어내지 말고 확인이 필요하다고 말한다.

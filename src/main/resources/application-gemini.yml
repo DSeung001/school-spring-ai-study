@@ -1,0 +1,12 @@
+spring:
+  ai:
+    model:
+      chat: google-genai
+      embedding: ollama
+    google:
+      genai:
+        api-key: ${GEMINI_API_KEY}
+        chat:
+          options:
+            model: ${GEMINI_MODEL}
+            temperature: 0.1

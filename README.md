@@ -1,6 +1,6 @@
 # school-spring-ai-study
 
-3일차 시작: 질문 CRUD·입력 검증·정적 화면까지 완성했습니다.
+4일차 시작: Ollama AI 답변과 생성 실패 시 데이터 보존까지 완성했습니다.
 
 ## 브랜치와 복구 기준
 
@@ -17,7 +17,7 @@
 수업 코드를 저장하거나 커밋한 다음 아래처럼 전환하세요. 작업 파일을 지우는 명령은 사용하지 않습니다.
 
 ```powershell
-git switch spring-ai
+git switch rag
 java -version
 javac -version
 .\gradlew.bat clean build
@@ -31,6 +31,20 @@ javac -version
 - 기존 서버는 Ctrl+C로 종료하고 실행하세요. Spring 포트는 8080입니다.
 - http://localhost:8080/ 에서 질문 등록·조회·수정·삭제와 빈 입력 거절을 확인하세요.
 - 질문 내역은 메모리에만 저장되므로 서버 재시작 시 사라집니다.
+
+## Ollama
+
+Ollama 설치 후 앱을 실행하고 아래 명령으로 모델을 준비하세요.
+
+```powershell
+ollama pull qwen3:4b-instruct
+ollama list
+```
+
+기본 주소는 http://localhost:11434 입니다. 강사 서버 사용 시 현재 PowerShell에서 `$env:OLLAMA_BASE_URL = "http://강사주소:11434"`를 설정한 뒤 Spring을 실행하세요.
+모델 호출 실패 시 기존 질문·답변이 유지되어야 합니다.
+
+선택 Gemini 시연은 강사용입니다. GEMINI_API_KEY와 GEMINI_MODEL 환경변수 설정 후 `.\gradlew.bat -Pgemini bootRun --args="--spring.profiles.active=gemini"`로 실행합니다. 키는 저장소에 넣지 마세요.
 
 ## 검증 범위
 

@@ -12,6 +12,11 @@ repositories { mavenCentral() }
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation platform('org.springframework.ai:spring-ai-bom:1.1.8')
+    implementation 'org.springframework.ai:spring-ai-starter-model-ollama'
+    if (project.hasProperty('gemini')) {
+        implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
+    }
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

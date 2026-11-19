@@ -11,6 +11,11 @@ public class QuestionService {
     private final TreeMap<Long, Question> questions = new TreeMap<>();
     private long nextId = 1;
 
+    private final AnswerService answerService;
+    public QuestionService(AnswerService answerService) {
+        this.answerService = answerService;
+    }
+
     public synchronized Question create(String content) {
         Question question = makeQuestion(nextId, content.strip());
         questions.put(nextId, question);
@@ -38,6 +43,6 @@ public class QuestionService {
     }
 
     private Question makeQuestion(long id, String content) {
-        return new Question(id, content, "질문을 받았습니다. AI는 3일차에 연결합니다.");
+        return new Question(id, content, answerService.answer(content));
     }
 }

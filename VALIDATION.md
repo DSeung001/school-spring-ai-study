@@ -1,6 +1,6 @@
 # 검증 기록
 
-- 브랜치: spring-ai
+- 브랜치: 03-spring-ai
 - JDK 21 / Gradle Wrapper 8.14.3
 - clean build: 통과
 - 자동 검증: HTTP CRUD·빈 입력 400·삭제 204·없는 번호 404

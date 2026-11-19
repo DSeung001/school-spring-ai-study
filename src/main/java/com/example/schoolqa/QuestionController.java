@@ -1,14 +1,29 @@
 package com.example.schoolqa;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/questions")
 public class QuestionController {
-    @GetMapping("/sample")
-    public Question sample() {
-        return new Question(1L, "도서관은 언제 열어요?", "안내문을 준비 중입니다.");
+    private final QuestionService service;
+    public QuestionController(QuestionService service) { this.service = service; }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Question create(@Valid @RequestBody QuestionRequest request) {
+        return service.create(request.content());
     }
+    @GetMapping
+    public List<Question> findAll() { return service.findAll(); }
+
+    @PutMapping("/{id}")
+    public Question update(@PathVariable long id, @Valid @RequestBody QuestionRequest request) {
+        return service.update(id, request.content());
+    }
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable long id) { service.delete(id); }
 }

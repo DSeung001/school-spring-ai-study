@@ -1,6 +1,6 @@
 # school-spring-ai-study
 
-2일차 시작: 객체와 샘플 JSON 응답까지 완성했습니다.
+3일차 시작: 질문 CRUD·입력 검증·정적 화면까지 완성했습니다.
 
 ## 브랜치와 복구 기준
 
@@ -17,7 +17,7 @@
 수업 코드를 저장하거나 커밋한 다음 아래처럼 전환하세요. 작업 파일을 지우는 명령은 사용하지 않습니다.
 
 ```powershell
-git switch spring-mvc-crud
+git switch spring-ai
 java -version
 javac -version
 .\gradlew.bat clean build
@@ -29,7 +29,7 @@ javac -version
 - JDK 21, IntelliJ IDEA, 인터넷이 필요합니다. Project SDK·Gradle JVM·JAVA_HOME을 21로 맞추세요.
 - Gradle Wrapper 8.14.3을 포함합니다. 최초 실행 시 Gradle과 의존성을 내려받습니다.
 - 기존 서버는 Ctrl+C로 종료하고 실행하세요. Spring 포트는 8080입니다.
-- http://localhost:8080/api/questions/sample 에서 id·content·answer JSON을 확인하세요. 아직 `/` 화면은 없습니다.
+- http://localhost:8080/ 에서 질문 등록·조회·수정·삭제와 빈 입력 거절을 확인하세요.
 - 질문 내역은 메모리에만 저장되므로 서버 재시작 시 사라집니다.
 
 ## 검증 범위

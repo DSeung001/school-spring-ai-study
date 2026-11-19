@@ -18,7 +18,9 @@
 
 ```powershell
 git switch 03-spring-ai
+# java는 바이트코드 실행 명령입니다. 실행 환경이 25 계열인지 확인합니다.
 java -version
+# javac는 소스 컴파일 명령입니다. 컴파일러도 25 계열인지 확인합니다.
 javac -version
 .\gradlew.bat clean build
 .\gradlew.bat bootRun
@@ -26,8 +28,10 @@ javac -version
 
 ## 준비와 실행 확인
 
-- JDK 21, IntelliJ IDEA, 인터넷이 필요합니다. Project SDK·Gradle JVM·JAVA_HOME을 21로 맞추세요.
-- Gradle Wrapper 8.14.3을 포함합니다. 최초 실행 시 Gradle과 의존성을 내려받습니다.
+- Spring Boot 4.1.2 / JDK 25 / Gradle Wrapper 9.1.0을 사용합니다. AI 단계는 Spring AI 2.0.2 기준입니다.
+
+- JDK 25, IntelliJ IDEA, 인터넷이 필요합니다. Project SDK·Gradle JVM·JAVA_HOME을 25로 맞추세요.
+- Gradle Wrapper 9.1.0을 포함합니다. 최초 실행 시 Gradle과 의존성을 내려받습니다.
 - 기존 서버는 Ctrl+C로 종료하고 실행하세요. Spring 포트는 8080입니다.
 - http://localhost:8080/ 에서 질문 등록·조회·수정·삭제와 빈 입력 거절을 확인하세요.
 - 질문 내역은 메모리에만 저장되므로 서버 재시작 시 사라집니다.

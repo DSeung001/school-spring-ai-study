@@ -7,6 +7,5 @@ spring:
       genai:
         api-key: ${GEMINI_API_KEY}
         chat:
-          options:
-            model: ${GEMINI_MODEL}
-            temperature: 0.1
+          model: ${GEMINI_MODEL}
+          temperature: 0.1

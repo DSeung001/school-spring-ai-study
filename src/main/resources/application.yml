@@ -16,13 +16,11 @@ spring:
       init:
         pull-model-strategy: never
       chat:
-        options:
-          model: qwen3:4b-instruct
-          temperature: 0.1
-          num-predict: 400
+        model: qwen3:4b-instruct
+        temperature: 0.1
+        num-predict: 400
       embedding:
-        options:
-          model: bge-m3
+        model: bge-m3
 server:
   port: 8080
 app:

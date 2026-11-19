@@ -1,6 +1,6 @@
 # school-spring-ai-study
 
-5일차 시작: 안내문 검색·RAG·검색 근거 표시까지 완성했습니다.
+5일차 최종본: RAG 답변 듣기(TTS)까지 완성했습니다.
 
 ## 브랜치와 복구 기준
 
@@ -17,7 +17,7 @@
 수업 코드를 저장하거나 커밋한 다음 아래처럼 전환하세요. 작업 파일을 지우는 명령은 사용하지 않습니다.
 
 ```powershell
-git switch tts-portfolio
+git switch result
 java -version
 javac -version
 .\gradlew.bat clean build
@@ -47,6 +47,22 @@ ollama list
 Spring 시작 시 `안내문 인덱싱 완료: 4개 청크` 로그를 확인한 뒤 질문하세요. 안내문을 바꾸면 재시작하여 다시 인덱싱합니다. 제공 안내문은 가상 자료입니다. 검색 점수는 정답 확률이 아닙니다.
 
 선택 Gemini 시연은 강사용입니다. GEMINI_API_KEY와 GEMINI_MODEL 환경변수 설정 후 `.\gradlew.bat -Pgemini bootRun --args="--spring.profiles.active=gemini"`로 실행합니다. 키는 저장소에 넣지 마세요.
+
+## TTS (별도 터미널)
+
+Python 3.11을 설치하고 프로젝트 루트에서 실행하세요.
+
+```powershell
+py -3.11 -m venv voice-server/.venv
+.\voice-server\.venv\Scripts\python.exe -m pip install -r voice-server/requirements.txt
+.\voice-server\.venv\Scripts\python.exe -m uvicorn tts_server:app --app-dir voice-server --host 127.0.0.1 --port 8001
+```
+
+첫 실행 시 모델을 다운로드합니다. http://localhost:8001/health 의 ready 응답 이후 듣기를 누르세요.
+강사 서버는 Spring 실행 전 `$env:TTS_BASE_URL = "http://강사주소:8001"`로 지정합니다.
+Python 서버가 중단되어도 기존 텍스트 답변과 검색 근거는 남아야 합니다.
+
+TTS 모델: [facebook/mms-tts-kor](https://huggingface.co/facebook/mms-tts-kor), Meta, **CC-BY-NC 4.0**. 모델 이용·배포 시 출처와 비상업 조건을 확인하세요.
 
 ## 검증 범위
 

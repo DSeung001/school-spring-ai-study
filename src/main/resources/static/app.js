@@ -58,6 +58,10 @@ async function loadQuestions() {
       } catch (error) { statusBox.textContent = error.message; }
     });
     item.append(edit, remove);
+    const speak = document.createElement('button');
+    speak.textContent = '답변 듣기';
+    speak.addEventListener('click', () => playAnswer(question.answer, speak));
+    item.append(speak);
     list.append(item);
   }
 }
@@ -75,3 +79,40 @@ form.addEventListener('submit', async event => {
   finally { send.disabled = false; }
 });
 loadQuestions().catch(error => { statusBox.textContent = error.message; });
+
+const player = document.querySelector('#player');
+let audioUrl = null;
+async function playAnswer(text, button) {
+  if (text.length > 1000) {
+    statusBox.textContent = '답변이 1000자를 넘어 읽을 수 없습니다. 더 짧은 답변으로 질문해 주세요.';
+    return;
+  }
+  button.disabled = true;
+  statusBox.textContent = '음성을 만들고 있습니다.';
+  try {
+    const response = await fetch('/api/voice/tts', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || '음성 생성 실패');
+    }
+    const blob = await response.blob();
+    player.pause();
+    if (audioUrl) URL.revokeObjectURL(audioUrl);
+    audioUrl = URL.createObjectURL(blob);
+    player.src = audioUrl;
+    try {
+      await player.play();
+      statusBox.textContent = '답변을 재생합니다.';
+    } catch {
+      statusBox.textContent = '아래 오디오 재생 버튼을 눌러 들어 주세요.';
+    }
+  } catch (error) { statusBox.textContent = error.message; }
+  finally { button.disabled = false; }
+}
+player.addEventListener('error', () => {
+  statusBox.textContent = '오디오를 재생하지 못했습니다. 다시 생성하거나 브라우저 설정을 확인해 주세요.';
+});
+window.addEventListener('beforeunload', () => { if (audioUrl) URL.revokeObjectURL(audioUrl); });

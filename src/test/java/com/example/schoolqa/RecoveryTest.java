@@ -8,7 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 class RecoveryTest {
 private final AnswerService answers = mock(AnswerService.class);
-private QuestionService service() { when(answers.answer(anyString())).thenReturn("답변");return new QuestionService(answers); }
+private QuestionService service() { when(answers.answer(anyString())).thenReturn(new GeneratedAnswer("답변", java.util.List.of()));return new QuestionService(answers); }
 @Test void crudAndValidation() throws Exception {
 var s=service(); var mvc=MockMvcBuilders.standaloneSetup(new QuestionController(s)).setControllerAdvice(new ApiErrorHandler()).build();
 mvc.perform(post("/api/questions").contentType(MediaType.APPLICATION_JSON).content("{\"content\":\"   \"}")).andExpect(status().isBadRequest());
@@ -26,8 +26,8 @@ when(answers.answer(anyString())).thenThrow(new IllegalStateException("model off
 assertThrows(IllegalStateException.class,()->s.update(original.getId(),"변경"));
 assertThrows(IllegalStateException.class,()->s.create("신규"));
 assertEquals(java.util.List.of(original),s.findAll());
-doReturn("복구").when(answers).answer(anyString());
+doReturn(new GeneratedAnswer("복구", java.util.List.of())).when(answers).answer(anyString());
 assertEquals(2L,s.create("복구").getId());
 }
-
+@Test void loadsFourNoticeChunks() throws Exception {var chunks=new NoticeLoader().load();assertEquals(4,chunks.size());assertEquals(4,chunks.stream().map(d->d.getMetadata().get("chunkId")).distinct().count());assertTrue(chunks.stream().allMatch(d->!d.getText().isBlank()));}
 }

@@ -1,6 +1,6 @@
 # school-spring-ai-study
 
-4일차 시작: Ollama AI 답변과 생성 실패 시 데이터 보존까지 완성했습니다.
+5일차 시작: 안내문 검색·RAG·검색 근거 표시까지 완성했습니다.
 
 ## 브랜치와 복구 기준
 
@@ -17,7 +17,7 @@
 수업 코드를 저장하거나 커밋한 다음 아래처럼 전환하세요. 작업 파일을 지우는 명령은 사용하지 않습니다.
 
 ```powershell
-git switch rag
+git switch tts-portfolio
 java -version
 javac -version
 .\gradlew.bat clean build
@@ -38,11 +38,13 @@ Ollama 설치 후 앱을 실행하고 아래 명령으로 모델을 준비하세
 
 ```powershell
 ollama pull qwen3:4b-instruct
+ollama pull bge-m3
 ollama list
 ```
 
 기본 주소는 http://localhost:11434 입니다. 강사 서버 사용 시 현재 PowerShell에서 `$env:OLLAMA_BASE_URL = "http://강사주소:11434"`를 설정한 뒤 Spring을 실행하세요.
 모델 호출 실패 시 기존 질문·답변이 유지되어야 합니다.
+Spring 시작 시 `안내문 인덱싱 완료: 4개 청크` 로그를 확인한 뒤 질문하세요. 안내문을 바꾸면 재시작하여 다시 인덱싱합니다. 제공 안내문은 가상 자료입니다. 검색 점수는 정답 확률이 아닙니다.
 
 선택 Gemini 시연은 강사용입니다. GEMINI_API_KEY와 GEMINI_MODEL 환경변수 설정 후 `.\gradlew.bat -Pgemini bootRun --args="--spring.profiles.active=gemini"`로 실행합니다. 키는 저장소에 넣지 마세요.
 

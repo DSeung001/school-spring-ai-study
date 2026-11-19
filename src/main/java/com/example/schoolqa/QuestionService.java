@@ -43,6 +43,7 @@ public class QuestionService {
     }
 
     private Question makeQuestion(long id, String content) {
-        return new Question(id, content, answerService.answer(content));
+        GeneratedAnswer generated = answerService.answer(content);
+        return new Question(id, content, generated.answer(), generated.sources());
     }
 }

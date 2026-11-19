@@ -25,6 +25,11 @@ async function loadQuestions() {
     const text = document.createElement('p');
     text.textContent = `#${question.id} 질문: ${question.content}\n답변: ${question.answer}`;
     item.append(text);
+    const sources = document.createElement('p');
+    sources.textContent = question.sources.length
+      ? '검색 근거: ' + question.sources.map(s => `${s.title} (${s.chunkId})\n${s.text}`).join('\n')
+      : '검색 근거 없음';
+    item.append(sources);
     const edit = document.createElement('button');
     edit.textContent = '수정';
     edit.addEventListener('click', async () => {

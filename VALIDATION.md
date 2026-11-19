@@ -1,6 +1,6 @@
 # 검증 기록
 
-- 브랜치: rag
+- 브랜치: 04-rag
 - JDK 21 / Gradle Wrapper 8.14.3
 - clean build: 통과
 - 자동 검증: HTTP CRUD·빈 입력 400·삭제 204·없는 번호 404 / 생성 실패 시 기존 데이터와 ID 보존 (모델 모킹)

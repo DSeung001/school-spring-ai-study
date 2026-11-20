@@ -33,7 +33,7 @@ javac -version
 - JDK 25, IntelliJ IDEA, 인터넷이 필요합니다. Project SDK·Gradle JVM·JAVA_HOME을 25로 맞추세요.
 - Gradle Wrapper 9.1.0을 포함합니다. 최초 실행 시 Gradle과 의존성을 내려받습니다.
 - 기존 서버는 Ctrl+C로 종료하고 실행하세요. Spring 포트는 8080입니다.
-- `Started SchoolQaApplication` 로그를 확인하세요. 아직 `/`의 404는 정상입니다.
+- `Started RagApplication` 로그를 확인하세요. 아직 `/`의 404는 정상입니다.
 - 질문 내역은 메모리에만 저장되므로 서버 재시작 시 사라집니다.
 
 ## 검증 범위

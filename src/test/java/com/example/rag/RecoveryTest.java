@@ -1,4 +1,4 @@
-package com.example.schoolqa;
+package com.example.rag;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

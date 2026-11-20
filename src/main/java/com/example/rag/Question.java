@@ -1,4 +1,4 @@
-package com.example.schoolqa;
+package com.example.rag;
 
 public class Question {
     private final long id;

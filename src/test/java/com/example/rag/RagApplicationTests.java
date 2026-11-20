@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-class RecoveryTest {
+class RagApplicationTests {
 private final AnswerService answers = mock(AnswerService.class);
 private QuestionService service() { when(answers.answer(anyString())).thenReturn(new GeneratedAnswer("답변", java.util.List.of()));return new QuestionService(answers); }
 @Test void crudAndValidation() throws Exception {

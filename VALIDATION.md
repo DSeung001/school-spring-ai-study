@@ -11,3 +11,4 @@
 - 2026-11-20 버전 변경 검증: Temurin 25.0.5에서 Gradle Wrapper 9.1.0의 clean build 통과. 자동 테스트 2 개, 실패 0 개, 오류 0 개. Spring Boot 4.2.0 / AI 단계 Spring AI 2.1.0.
 
 - 2026-11-20 Initializr 기준 정리 검증: Temurin 25.0.5에서 Gradle Wrapper 9.9.2의 clean build 통과. 자동 테스트 2 개, 실패 0 개, 오류 0 개. application.yaml·RagApplicationTests·validation-test 의존성 반영.
+- 2026-11-20 콘솔 인코딩 검증: JavaExec(bootRun·IntelliJ 실행) 출력을 UTF-8로 고정. clean build 통과, 자동 테스트 2 개, 실패 0 개, 오류 0 개.

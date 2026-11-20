@@ -1,4 +1,4 @@
-package com.example.schoolqa;
+package com.example.rag;
 
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.SimpleVectorStore;

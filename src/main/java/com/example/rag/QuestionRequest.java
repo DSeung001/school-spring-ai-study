@@ -1,4 +1,4 @@
-package com.example.schoolqa;
+package com.example.rag;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

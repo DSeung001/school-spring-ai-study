@@ -1,6 +1,6 @@
 spring:
   application:
-    name: school-qa
+    name: rag
   http:
     client:
       connect-timeout: 5s

@@ -28,7 +28,7 @@ javac -version
 
 ## 준비와 실행 확인
 
-- Spring Boot 4.1.2 / JDK 25 / Gradle Wrapper 9.1.0을 사용합니다. AI 단계는 Spring AI 2.0.2 기준입니다.
+- Spring Boot 4.2.0 / JDK 25 / Gradle Wrapper 9.1.0을 사용합니다. AI 단계는 Spring AI 2.1.0 기준입니다.
 
 - JDK 25, IntelliJ IDEA, 인터넷이 필요합니다. Project SDK·Gradle JVM·JAVA_HOME을 25로 맞추세요.
 - Gradle Wrapper 9.1.0을 포함합니다. 최초 실행 시 Gradle과 의존성을 내려받습니다.

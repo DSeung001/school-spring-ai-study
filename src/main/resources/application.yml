@@ -1,5 +1,5 @@
 spring:
   application:
-    name: school-qa
+    name: rag
 server:
   port: 8080

@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.1.2'
+    id 'org.springframework.boot' version '4.2.0'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 group = 'com.example'
@@ -12,7 +12,7 @@ repositories { mavenCentral() }
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation platform('org.springframework.ai:spring-ai-bom:2.0.2')
+    implementation platform('org.springframework.ai:spring-ai-bom:2.1.0')
     implementation 'org.springframework.ai:spring-ai-starter-model-ollama'
     if (project.hasProperty('gemini')) {
         implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'

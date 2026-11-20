@@ -1,4 +1,4 @@
-package com.example.schoolqa;
+package com.example.rag;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

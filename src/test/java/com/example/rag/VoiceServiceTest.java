@@ -1,4 +1,4 @@
-package com.example.schoolqa;
+package com.example.rag;
 
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;

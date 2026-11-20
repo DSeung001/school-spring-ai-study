@@ -1,4 +1,4 @@
-package com.example.schoolqa;
+package com.example.rag;
 
 public class ObjectPractice {
     public static void main(String[] args) {

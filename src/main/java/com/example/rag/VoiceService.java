@@ -1,4 +1,4 @@
-package com.example.schoolqa;
+package com.example.rag;
 
 import java.net.http.HttpClient;
 import java.time.Duration;

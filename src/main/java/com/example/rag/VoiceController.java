@@ -1,4 +1,4 @@
-package com.example.schoolqa;
+package com.example.rag;
 
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;

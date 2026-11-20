@@ -1,4 +1,4 @@
-package com.example.schoolqa;
+package com.example.rag;
 
 import java.util.List;
 import java.util.stream.Collectors;

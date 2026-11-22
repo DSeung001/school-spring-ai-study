@@ -16,7 +16,7 @@ spring:
       init:
         pull-model-strategy: never
       chat:
-        model: qwen3:4b-instruct
+        model: exaone3.5:7.8b
         temperature: 0.1
         num-predict: 400
       embedding:

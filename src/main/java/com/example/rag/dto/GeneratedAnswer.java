@@ -1,4 +1,6 @@
-package com.example.rag;
+package com.example.rag.dto;
+
+import com.example.rag.model.Source;
 
 import java.util.List;
 

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>학교 안내 도우미</title>
+  <style>
+    body { max-width: 760px; margin: 32px auto; padding: 16px; font-family: sans-serif; }
+    textarea { width: 100%; min-height: 70px; }
+    li { border-bottom: 1px solid #bbb; padding: 16px 0; white-space: pre-wrap; }
+    button { margin: 4px; padding: 8px; }
+    #status { min-height: 24px; }
+  </style>
+</head>
+<body>
+  <h1>학교 안내 도우미</h1>
+  <form id="question-form">
+    <label for="content">질문 (1~200자)</label>
+    <textarea id="content" maxlength="200" required></textarea>
+    <button id="send" type="submit">질문 보내기</button>
+  </form>
+  <section aria-label="음성 출력">
+    <p>답변의 듣기 버튼을 누르면 음성을 만듭니다.</p>
+    <audio id="player" controls></audio>
+  </section>
+  <p id="status" role="status" aria-live="polite"></p>
+  <ul id="questions"></ul>
+  <script src="/app.js" defer></script>
+</body>
+</html>

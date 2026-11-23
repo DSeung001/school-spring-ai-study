@@ -1,0 +1,144 @@
+# MySQL·MyBatis 연결
+
+## 브랜치와 실행 준비
+
+| 브랜치 | 제공 상태 | MySQL 필요 |
+|---|---|---|
+| 01-main | 1일차 기본 프로젝트 | 아니요 |
+| 02-spring-mvc-crud | 2일차 DB 기반 MVC CRUD 완성본 | 예 |
+| 03-spring-ai | 3일차 시작: DB 기반 MVC CRUD 완성본 | 예 |
+| 04-rag | 4일차 시작: DB 저장과 Ollama 답변 완성본 | 예 |
+| 05-tts-portfolio | 5일차 시작: DB 저장과 RAG·검색 근거 완성본 | 예 |
+| 06-result | 최종본: RAG 답변 듣기까지 완성 | 예 |
+
+2일차 교안은 기존 메모리 예제에서 시작해 `ApiErrorHandler` 다음에 DB로 전환합니다. `02`는 복구용 완성본이므로 `/api/questions/sample` 대신 CRUD API를 제공합니다. `03`~`05`의 이름은 그날 배울 개념입니다.
+
+## 1. MySQL 8.4 LTS 설치
+
+공식 [다운로드](https://dev.mysql.com/downloads/mysql/8.4.html)에서 8.4 LTS와 본인 OS·CPU를 선택합니다. [공식 설치 안내](https://dev.mysql.com/doc/refman/8.4/en/installing.html)를 함께 확인하세요. MySQL Server와 SQL 접속 도구는 역할이 다릅니다. Workbench 설치는 필수가 아닙니다.
+
+### Windows · PowerShell
+
+1. Windows x64용 MSI를 실행합니다. 설치 후 **MySQL Configurator**로 서버를 구성합니다. 8.4는 예전 8.0용 MySQL Installer를 사용하지 않습니다.
+2. TCP 포트 `3306`, Windows 서비스 등록과 시작을 확인하고 관리자 `root` 비밀번호를 직접 정합니다. 학교 PC의 관리자 권한과 설치 허용 여부는 강사가 미리 확인합니다.
+3. 아래처럼 클라이언트를 실행합니다. 설치 경로가 다르면 실제 경로로 바꿉니다. 비밀번호는 `-p` 뒤에 적지 않고 프롬프트에서 입력합니다.
+
+```powershell
+& "C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe" --default-character-set=utf8mb4 -u root -p
+```
+
+### macOS · Terminal(zsh)
+
+1. 공식 DMG·PKG에서 Apple Silicon은 ARM64, Intel은 x86_64를 선택합니다. 다운로드 화면의 지원 macOS 버전도 확인합니다.
+2. 패키지 설치와 초기 설정에서 `root` 비밀번호를 정하고 MySQL 서버를 시작합니다. 중지 상태면 시스템 설정의 MySQL 패널에서 시작합니다.
+3. 기본 설치 경로의 클라이언트로 접속합니다.
+
+```bash
+/usr/local/mysql/bin/mysql --default-character-set=utf8mb4 -u root -p
+```
+
+두 OS 모두 `mysql>` 프롬프트에서 다음을 실행해 서버 접속을 확인합니다.
+
+```sql
+SELECT VERSION();
+```
+
+## 2. DB와 수업용 사용자 만들기
+
+관리자 접속에서 한 번 실행합니다. `직접_정한_비밀번호`는 본인 비밀번호로 바꾸고 나중에 환경변수에도 같은 값을 넣습니다. 실제 비밀번호를 Git에 올리지 않습니다.
+
+```sql
+CREATE DATABASE IF NOT EXISTS school_ai CHARACTER SET utf8mb4;
+CREATE USER 'school_ai'@'localhost' IDENTIFIED BY '직접_정한_비밀번호';
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, REFERENCES ON school_ai.* TO 'school_ai'@'localhost';
+EXIT;
+```
+
+사용자가 이미 있으면 다시 생성하지 않습니다. 비밀번호를 바꾸려면 관리자 접속에서 `ALTER USER 'school_ai'@'localhost' IDENTIFIED BY '새_비밀번호';`를 실행합니다.
+
+## 3. Spring 접속 설정과 실행
+
+`DB_URL` 기본값은 `jdbc:mysql://localhost:3306/school_ai?connectionTimeZone=Asia/Seoul`, `DB_USERNAME` 기본값은 `school_ai`입니다. `DB_PASSWORD`는 필수이며 비밀번호를 YAML에 직접 쓰지 않습니다. `.env` 파일은 Spring이 자동으로 읽지 않습니다.
+
+PowerShell:
+
+```powershell
+$env:DB_PASSWORD = Read-Host "MySQL 수업용 사용자 비밀번호" -MaskInput
+.\gradlew.bat bootRun
+```
+
+Windows PowerShell 5.1에서 `-MaskInput`을 지원하지 않으면 다음을 사용합니다.
+
+```powershell
+$dbSecret = Read-Host "MySQL 수업용 사용자 비밀번호" -AsSecureString
+$env:DB_PASSWORD = [System.Net.NetworkCredential]::new("", $dbSecret).Password
+.\gradlew.bat bootRun
+```
+
+macOS:
+
+```bash
+read -s 'DB_PASSWORD?MySQL 수업용 사용자 비밀번호: '; echo
+export DB_PASSWORD
+./gradlew bootRun
+```
+
+IntelliJ 실행 버튼을 사용한다면 Run Configuration의 Environment variables에도 설정합니다. [http://localhost:8081/](http://localhost:8081/)에서 접속합니다. Spring은 8081, MySQL은 3306입니다.
+
+`schema.sql`은 없는 테이블만 생성합니다. 기존 질문을 지우거나 예제 데이터를 넣지 않습니다. 질문은 MySQL에 남으므로 Spring을 종료·재실행해도 유지됩니다. 번호는 DB의 `AUTO_INCREMENT`가 생성하며 삭제·롤백으로 빈 번호가 생겨도 정상입니다.
+
+## 4. 저장 흐름과 코드 위치
+
+```text
+com.example.rag
+├── RagApplication.java
+├── controller   HTTP 요청·응답
+├── service      업무 처리·AI 호출·트랜잭션
+├── repository   QuestionMapper, RAG 단계의 SourceMapper와 SQL
+├── model        Question, RAG 단계의 Source
+├── dto          QuestionRequest, 이후 GeneratedAnswer·SpeechRequest
+├── config       RAG 단계의 설정
+├── exception    ApiErrorHandler
+└── practice     ObjectPractice
+```
+
+빈 폴더는 만들지 않습니다. Model은 DB 자체가 아니라 Java 데이터이며, 정적 `index.html`·`app.js`가 View입니다. Mapper는 MyBatis가 구현하는 DB 접근 인터페이스입니다. 애너테이션에 SQL을 한 번 작성하고 `#{...}`로 값을 전달합니다. 생성된 질문 번호는 `@Options(useGeneratedKeys = true)`로 돌려받습니다.
+
+`questions`는 질문·답변을 저장합니다. RAG 단계의 `question_sources`는 당시 근거의 순서·제목·청크 번호·본문·점수를 저장하며 질문 삭제 시 함께 삭제됩니다. 안내문 임베딩 검색은 기존 `SimpleVectorStore`를 사용합니다. 관계형 DB의 질문 내역과 벡터 검색 저장소는 역할이 다릅니다.
+
+AI 호출은 쓰기 트랜잭션 전에 끝내고, 질문·답변과 근거는 `TransactionTemplate`으로 함께 저장합니다. AI 생성 실패 시 저장을 시작하지 않고, DB 저장 도중 실패하면 전체를 롤백합니다. SQL·접속 정보는 오류 응답에 노출하지 않으며 DB 작업 실패는 503과 `message` JSON으로 안내합니다.
+
+## 5. 테스트는 전용 DB에서 실행
+
+관리자로 테스트 DB를 생성하고 앞서 만든 사용자에게 권한을 줍니다.
+
+```sql
+CREATE DATABASE IF NOT EXISTS school_ai_test CHARACTER SET utf8mb4;
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, REFERENCES ON school_ai_test.* TO 'school_ai'@'localhost';
+```
+
+`DB_PASSWORD`를 설정한 같은 터미널에서 테스트용 접속 주소를 지정합니다. 통합 테스트는 이름이 `_test`로 끝나는 DB에서만 질문을 삭제하며, 일반 수업 DB에 연결하면 삭제 전에 실패합니다. 01 브랜치는 DB 설정 없이 테스트합니다.
+
+```powershell
+$env:DB_URL = "jdbc:mysql://localhost:3306/school_ai_test?connectionTimeZone=Asia/Seoul"
+.\gradlew.bat test
+Remove-Item Env:DB_URL
+```
+
+```bash
+DB_URL='jdbc:mysql://localhost:3306/school_ai_test?connectionTimeZone=Asia/Seoul' ./gradlew test
+```
+
+RAG 테스트는 시작 시 실제 임베딩 생성을 끄고, AI 응답 테스트 대역과 실제 MySQL을 사용합니다. 일반 실행은 안내문 인덱싱을 수행하므로 Ollama와 모델을 준비해야 합니다. TTS는 기존 Python 서버 준비도 필요합니다.
+
+## 막혔을 때
+
+- `Connection refused`: MySQL 서비스 실행과 3306 포트 확인.
+- `Access denied`: 사용자·비밀번호·허용 호스트·권한 확인. root 대신 수업용 사용자를 사용.
+- `Unknown database`: DB 생성과 `DB_URL` 확인.
+- `DB_PASSWORD` 설정 오류: 실제 실행하는 터미널 또는 IntelliJ 환경변수 확인.
+- 서버 재시작 후 목록이 다름: 같은 `DB_URL`인지 확인. 테스트 DB와 수업 DB를 구분.
+
+## 버전 기준
+
+MySQL 8.4 LTS, MyBatis Spring Boot Starter 4.1.0, MySQL Connector/J는 Spring Boot의 의존성 관리 버전을 사용합니다. JDK 25·Spring Boot 4.2.0·Gradle 9.9.2는 기존 수업 기준을 유지합니다.

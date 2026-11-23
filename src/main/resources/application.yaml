@@ -1,5 +1,13 @@
 spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/school_ai?connectionTimeZone=Asia/Seoul}
+    username: ${DB_USERNAME:school_ai}
+    password: ${DB_PASSWORD}
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
   application:
     name: rag
 server:
-  port: 8080
+  port: 8081

@@ -8,7 +8,7 @@
 
 ## 적용 준비
 
-GET·POST /api/questions 구현 완료. 02-spring-mvc-crud에서 2일차 3절까지 진행하거나 03-spring-ai의 백엔드를 사용합니다.
+GET·POST /api/questions 구현 완료. 2일차 DB 연결과 해당 API 구현을 마치거나 02-spring-mvc-crud의 완성 백엔드를 사용합니다.
 
 적용 방법은 [퍼블리싱 안내](../README.md#적용-방법)를 따릅니다. 두 파일을 함께 복사하세요.
 
@@ -43,7 +43,7 @@ GET·POST /api/questions 구현 완료. 02-spring-mvc-crud에서 2일차 3절까
 +  </form>
 +  <p id="status" role="status" aria-live="polite"></p>
 +  <ul id="questions"></ul>
-+  <!-- static 폴더 파일은 Spring이 그대로 내려 줌. 이 파일은 http://localhost:8080/, app.js는 /app.js로 열림 -->
++  <!-- static 폴더 파일은 Spring이 그대로 내려 줌. 이 파일은 http://localhost:8081/, app.js는 /app.js로 열림 -->
 +  <script src="/app.js" defer></script>
 +</body>
 +</html>
@@ -61,7 +61,7 @@ GET·POST /api/questions 구현 완료. 02-spring-mvc-crud에서 2일차 3절까
 +const statusBox = document.querySelector('#status');
 +const send = document.querySelector('#send');
 +
-+// '/api/...'처럼 주소 앞부분 없이 써도 이 화면을 준 서버(localhost:8080)로 요청이 감
++// '/api/...'처럼 주소 앞부분 없이 써도 이 화면을 준 서버(localhost:8081)로 요청이 감
 +async function request(url, options = {}) {
 +  const response = await fetch(url, options);
 +  const text = await response.text();
@@ -131,7 +131,7 @@ GET·POST /api/questions 구현 완료. 02-spring-mvc-crud에서 2일차 3절까
   </form>
   <p id="status" role="status" aria-live="polite"></p>
   <ul id="questions"></ul>
-  <!-- static 폴더 파일은 Spring이 그대로 내려 줌. 이 파일은 http://localhost:8080/, app.js는 /app.js로 열림 -->
+  <!-- static 폴더 파일은 Spring이 그대로 내려 줌. 이 파일은 http://localhost:8081/, app.js는 /app.js로 열림 -->
   <script src="/app.js" defer></script>
 </body>
 </html>
@@ -146,7 +146,7 @@ const list = document.querySelector('#questions');
 const statusBox = document.querySelector('#status');
 const send = document.querySelector('#send');
 
-// '/api/...'처럼 주소 앞부분 없이 써도 이 화면을 준 서버(localhost:8080)로 요청이 감
+// '/api/...'처럼 주소 앞부분 없이 써도 이 화면을 준 서버(localhost:8081)로 요청이 감
 async function request(url, options = {}) {
   const response = await fetch(url, options);
   const text = await response.text();

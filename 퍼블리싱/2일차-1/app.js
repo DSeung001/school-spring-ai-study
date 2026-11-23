@@ -4,7 +4,7 @@ const list = document.querySelector('#questions');
 const statusBox = document.querySelector('#status');
 const send = document.querySelector('#send');
 
-// '/api/...'처럼 주소 앞부분 없이 써도 이 화면을 준 서버(localhost:8080)로 요청이 감
+// '/api/...'처럼 주소 앞부분 없이 써도 이 화면을 준 서버(localhost:8081)로 요청이 감
 async function request(url, options = {}) {
   const response = await fetch(url, options);
   const text = await response.text();

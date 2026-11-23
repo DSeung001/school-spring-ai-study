@@ -27,7 +27,7 @@ RAG 검색 근거 표시 기능을 적용하는 완성 HTML·JS입니다.
  const statusBox = document.querySelector('#status');
  const send = document.querySelector('#send');
  
--// '/api/...'처럼 주소 앞부분 없이 써도 이 화면을 준 서버(localhost:8080)로 요청이 감
+-// '/api/...'처럼 주소 앞부분 없이 써도 이 화면을 준 서버(localhost:8081)로 요청이 감
  async function request(url, options = {}) {
    const response = await fetch(url, options);
    const text = await response.text();
@@ -81,7 +81,7 @@ RAG 검색 근거 표시 기능을 적용하는 완성 HTML·JS입니다.
   </form>
   <p id="status" role="status" aria-live="polite"></p>
   <ul id="questions"></ul>
-  <!-- static 폴더 파일은 Spring이 그대로 내려 줌. 이 파일은 http://localhost:8080/, app.js는 /app.js로 열림 -->
+  <!-- static 폴더 파일은 Spring이 그대로 내려 줌. 이 파일은 http://localhost:8081/, app.js는 /app.js로 열림 -->
   <script src="/app.js" defer></script>
 </body>
 </html>

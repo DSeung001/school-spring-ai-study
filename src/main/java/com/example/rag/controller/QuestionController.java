@@ -1,4 +1,8 @@
-package com.example.rag;
+package com.example.rag.controller;
+
+import com.example.rag.dto.QuestionRequest;
+import com.example.rag.model.Question;
+import com.example.rag.service.QuestionService;
 
 import java.util.List;
 import jakarta.validation.Valid;

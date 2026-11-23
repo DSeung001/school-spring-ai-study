@@ -1,4 +1,4 @@
-package com.example.rag;
+package com.example.rag.service;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;

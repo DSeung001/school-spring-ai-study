@@ -1,4 +1,6 @@
-package com.example.rag;
+package com.example.rag.practice;
+
+import com.example.rag.model.Question;
 
 public class ObjectPractice {
     public static void main(String[] args) {

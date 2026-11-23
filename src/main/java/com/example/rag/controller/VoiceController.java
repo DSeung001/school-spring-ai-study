@@ -1,4 +1,7 @@
-package com.example.rag;
+package com.example.rag.controller;
+
+import com.example.rag.dto.SpeechRequest;
+import com.example.rag.service.VoiceService;
 
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;

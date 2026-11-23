@@ -1,4 +1,4 @@
-package com.example.rag;
+package com.example.rag.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

@@ -1,4 +1,4 @@
-package com.example.rag;
+package com.example.rag.service;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

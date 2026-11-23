@@ -1,4 +1,12 @@
 spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/school_ai?connectionTimeZone=Asia/Seoul}
+    username: ${DB_USERNAME:school_ai}
+    password: ${DB_PASSWORD}
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
   application:
     name: rag
   http:
@@ -22,7 +30,7 @@ spring:
       embedding:
         model: bge-m3
 server:
-  port: 8080
+  port: 8081
 app:
   system-prompt: >-
     너는 학교 안내 도우미다. 고등학생에게 설명하듯 한국어 존댓말 두세 문장으로 답한다.

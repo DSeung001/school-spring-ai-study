@@ -1,4 +1,6 @@
-package com.example.rag;
+package com.example.rag.service;
+
+import com.example.rag.dto.SpeechRequest;
 
 import java.net.http.HttpClient;
 import java.time.Duration;

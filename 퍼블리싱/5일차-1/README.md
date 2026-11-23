@@ -29,7 +29,7 @@ RAG API와 POST /api/voice/tts 구현 완료. 05-tts-portfolio에서 5일차 2�
 +  </section>
    <p id="status" role="status" aria-live="polite"></p>
    <ul id="questions"></ul>
--  <!-- static 폴더 파일은 Spring이 그대로 내려 줌. 이 파일은 http://localhost:8080/, app.js는 /app.js로 열림 -->
+-  <!-- static 폴더 파일은 Spring이 그대로 내려 줌. 이 파일은 http://localhost:8081/, app.js는 /app.js로 열림 -->
    <script src="/app.js" defer></script>
  </body>
  </html>

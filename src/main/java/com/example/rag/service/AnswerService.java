@@ -1,4 +1,7 @@
-package com.example.rag;
+package com.example.rag.service;
+
+import com.example.rag.dto.GeneratedAnswer;
+import com.example.rag.model.Source;
 
 import java.util.List;
 import java.util.stream.Collectors;

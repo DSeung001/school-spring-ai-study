@@ -1,54 +1,28 @@
 package com.example.rag.service;
 
-import java.util.List;
 import com.example.rag.model.Question;
-import com.example.rag.repository.QuestionMapper;
+
+import java.util.List;
+import java.util.TreeMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
+// Spring이 이 객체를 하나만 만들어 모든 요청이 함께 씀 → 아래 Map도 공유되므로 synchronized를 붙임
 @Service
 public class QuestionService {
-    private final QuestionMapper mapper;
-    private final TransactionTemplate transaction;
+    // 서버 메모리에만 있음. 재시작하면 비어 있음
+    private final TreeMap<Long, Question> questions = new TreeMap<>();
+    private long nextId = 1;
 
-    public QuestionService(QuestionMapper mapper, TransactionTemplate transaction) {
-        this.mapper = mapper;
-        this.transaction = transaction;
+    public synchronized Question create(String content) {
+        Question question = makeQuestion(nextId, content.strip());
+        questions.put(nextId, question);
+        nextId++;
+        return question;
     }
-
-    public Question create(String content) {
-        // 답변 생성이 실패하면 DB 저장을 시작하지 않음.
-        Question question = makeQuestion(0, content.strip());
-        return transaction.execute(status -> {
-            mapper.insert(question); // AUTO_INCREMENT 번호가 question.id에 들어옴
-            return question;
-        });
-    }
-
-    @Transactional(readOnly = true)
-    public List<Question> findAll() {
-        return mapper.findAll();
-    }
-
-    public Question update(long id, String content) {
-        if (mapper.findById(id) == null) throw notFound();
-        // 외부 모델 호출은 쓰기 트랜잭션 전에 끝냄.
-        Question updated = makeQuestion(id, content.strip());
-        return transaction.execute(status -> {
-            if (mapper.update(updated) == 0) throw notFound();
-            return updated;
-        });
-    }
-
-    public void delete(long id) {
-        if (mapper.delete(id) == 0) throw notFound();
-    }
-
-    private ResponseStatusException notFound() {
-        return new ResponseStatusException(HttpStatus.NOT_FOUND, "질문을 찾을 수 없습니다.");
+    public synchronized List<Question> findAll() {
+        return List.copyOf(questions.values());
     }
 
     private Question makeQuestion(long id, String content) {

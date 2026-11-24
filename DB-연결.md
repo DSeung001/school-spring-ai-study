@@ -43,34 +43,32 @@
 SELECT VERSION();
 ```
 
-## 2. DB와 수업용 사용자 만들기
+## 2. DB 만들기와 root 계정 사용
 
-관리자 접속에서 한 번 실행합니다. `직접_정한_비밀번호`는 본인 비밀번호로 바꾸고 나중에 환경변수에도 같은 값을 넣습니다. 실제 비밀번호를 Git에 올리지 않습니다.
+설치할 때 정한 root 계정으로 접속해 DB를 만듭니다. 강의에서는 별도 사용자를 만들지 않고 root로 연결합니다. DB_PASSWORD에는 설치 시 정한 root 비밀번호를 넣습니다. 실제 비밀번호를 Git에 올리지 않습니다.
 
 ```sql
 CREATE DATABASE IF NOT EXISTS school_ai CHARACTER SET utf8mb4;
-CREATE USER 'school_ai'@'localhost' IDENTIFIED BY '직접_정한_비밀번호';
-GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, REFERENCES ON school_ai.* TO 'school_ai'@'localhost';
 EXIT;
 ```
 
-사용자가 이미 있으면 다시 생성하지 않습니다. 비밀번호를 바꾸려면 관리자 접속에서 `ALTER USER 'school_ai'@'localhost' IDENTIFIED BY '새_비밀번호';`를 실행합니다.
+root 비밀번호는 MySQL 설치 시 설정한 값을 사용합니다.
 
 ## 3. Spring 접속 설정과 실행
 
-`DB_URL` 기본값은 `jdbc:mysql://localhost:3306/school_ai?connectionTimeZone=Asia/Seoul`, `DB_USERNAME` 기본값은 `school_ai`입니다. `DB_PASSWORD`는 필수이며 비밀번호를 YAML에 직접 쓰지 않습니다. `.env` 파일은 Spring이 자동으로 읽지 않습니다.
+`DB_URL` 기본값은 `jdbc:mysql://localhost:3306/school_ai?connectionTimeZone=Asia/Seoul`, `DB_USERNAME` 기본값은 `root`입니다. `DB_PASSWORD`는 필수이며 비밀번호를 YAML에 직접 쓰지 않습니다. `.env` 파일은 Spring이 자동으로 읽지 않습니다.
 
 PowerShell:
 
 ```powershell
-$env:DB_PASSWORD = Read-Host "MySQL 수업용 사용자 비밀번호" -MaskInput
+$env:DB_PASSWORD = Read-Host "MySQL root 비밀번호" -MaskInput
 .\gradlew.bat bootRun
 ```
 
 Windows PowerShell 5.1에서 `-MaskInput`을 지원하지 않으면 다음을 사용합니다.
 
 ```powershell
-$dbSecret = Read-Host "MySQL 수업용 사용자 비밀번호" -AsSecureString
+$dbSecret = Read-Host "MySQL root 비밀번호" -AsSecureString
 $env:DB_PASSWORD = [System.Net.NetworkCredential]::new("", $dbSecret).Password
 .\gradlew.bat bootRun
 ```
@@ -78,7 +76,7 @@ $env:DB_PASSWORD = [System.Net.NetworkCredential]::new("", $dbSecret).Password
 macOS:
 
 ```bash
-read -s 'DB_PASSWORD?MySQL 수업용 사용자 비밀번호: '; echo
+read -s 'DB_PASSWORD?MySQL root 비밀번호: '; echo
 export DB_PASSWORD
 ./gradlew bootRun
 ```
@@ -110,11 +108,10 @@ AI 호출은 쓰기 트랜잭션 전에 끝내고, 질문·답변과 근거는 `
 
 ## 5. 테스트는 전용 DB에서 실행
 
-관리자로 테스트 DB를 생성하고 앞서 만든 사용자에게 권한을 줍니다.
+root 계정으로 테스트 DB를 생성합니다.
 
 ```sql
 CREATE DATABASE IF NOT EXISTS school_ai_test CHARACTER SET utf8mb4;
-GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, REFERENCES ON school_ai_test.* TO 'school_ai'@'localhost';
 ```
 
 `DB_PASSWORD`를 설정한 같은 터미널에서 테스트용 접속 주소를 지정합니다. 통합 테스트는 이름이 `_test`로 끝나는 DB에서만 질문을 삭제하며, 일반 수업 DB에 연결하면 삭제 전에 실패합니다. 01·02 브랜치는 DB 설정 없이 테스트합니다.
@@ -134,7 +131,7 @@ RAG 테스트는 시작 시 실제 임베딩 생성을 끄고, AI 응답 테스�
 ## 막혔을 때
 
 - `Connection refused`: MySQL 서비스 실행과 3306 포트 확인.
-- `Access denied`: 사용자·비밀번호·허용 호스트·권한 확인. root 대신 수업용 사용자를 사용.
+- `Access denied`: 사용자·비밀번호·허용 호스트·권한 확인. 설치 시 정한 root 비밀번호와 DB_USERNAME 설정을 확인.
 - `Unknown database`: DB 생성과 `DB_URL` 확인.
 - `DB_PASSWORD` 설정 오류: 실제 실행하는 터미널 또는 IntelliJ 환경변수 확인.
 - 서버 재시작 후 목록이 다름: 같은 `DB_URL`인지 확인. 테스트 DB와 수업 DB를 구분.

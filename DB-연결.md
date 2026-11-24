@@ -5,13 +5,13 @@
 | 브랜치 | 제공 상태 | MySQL 필요 |
 |---|---|---|
 | 01-main | 1일차 기본 프로젝트 | 아니요 |
-| 02-spring-mvc-crud | 2일차 DB 기반 MVC CRUD 완성본 | 예 |
+| 02-spring-mvc-crud | 2일차 시작: 메모리 등록·조회·입력 검증·ApiErrorHandler | 아니요 |
 | 03-spring-ai | 3일차 시작: DB 기반 MVC CRUD 완성본 | 예 |
 | 04-rag | 4일차 시작: DB 저장과 Ollama 답변 완성본 | 예 |
 | 05-tts-portfolio | 5일차 시작: DB 저장과 RAG·검색 근거 완성본 | 예 |
 | 06-result | 최종본: RAG 답변 듣기까지 완성 | 예 |
 
-2일차 교안은 기존 메모리 예제에서 시작해 `ApiErrorHandler` 다음에 DB로 전환합니다. `02`는 복구용 완성본이므로 `/api/questions/sample` 대신 CRUD API를 제공합니다. `03`~`05`의 이름은 그날 배울 개념입니다.
+1일차에서 ApiErrorHandler까지 완성하며 `02`를 받으면 그 상태로 시작합니다. POST·GET만 있고 DB·화면·수정·삭제는 없습니다. 2일차는 MySQL 설치부터 시작합니다. DB 기반 CRUD 복구용 완성본은 `03`입니다. `03`~`05`의 이름은 그날 배울 개념입니다.
 
 ## 1. MySQL 8.4 LTS 설치
 
@@ -117,7 +117,7 @@ CREATE DATABASE IF NOT EXISTS school_ai_test CHARACTER SET utf8mb4;
 GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, REFERENCES ON school_ai_test.* TO 'school_ai'@'localhost';
 ```
 
-`DB_PASSWORD`를 설정한 같은 터미널에서 테스트용 접속 주소를 지정합니다. 통합 테스트는 이름이 `_test`로 끝나는 DB에서만 질문을 삭제하며, 일반 수업 DB에 연결하면 삭제 전에 실패합니다. 01 브랜치는 DB 설정 없이 테스트합니다.
+`DB_PASSWORD`를 설정한 같은 터미널에서 테스트용 접속 주소를 지정합니다. 통합 테스트는 이름이 `_test`로 끝나는 DB에서만 질문을 삭제하며, 일반 수업 DB에 연결하면 삭제 전에 실패합니다. 01·02 브랜치는 DB 설정 없이 테스트합니다.
 
 ```powershell
 $env:DB_URL = "jdbc:mysql://localhost:3306/school_ai_test?connectionTimeZone=Asia/Seoul"

@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/school_ai?connectionTimeZone=Asia/Seoul}
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://localhost:3306/school_ai?connectionTimeZone=Asia/Seoul
+    username: root
+    password: '본인의_root_비밀번호'
   sql:
     init:
       mode: always

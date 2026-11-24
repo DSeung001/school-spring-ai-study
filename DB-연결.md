@@ -45,7 +45,7 @@ SELECT VERSION();
 
 ## 2. DB 만들기와 root 계정 사용
 
-설치할 때 정한 root 계정으로 접속해 DB를 만듭니다. 강의에서는 별도 사용자를 만들지 않고 root로 연결합니다. DB_PASSWORD에는 설치 시 정한 root 비밀번호를 넣습니다. 실제 비밀번호를 Git에 올리지 않습니다.
+설치할 때 정한 root 계정으로 접속해 DB를 만듭니다. 강의에서는 별도 사용자를 만들지 않고 root로 연결합니다. application.yaml의 password에는 설치 시 정한 root 비밀번호를 넣습니다. 실제 비밀번호를 Git에 올리지 않습니다.
 
 ```sql
 CREATE DATABASE IF NOT EXISTS school_ai CHARACTER SET utf8mb4;
@@ -56,32 +56,29 @@ root 비밀번호는 MySQL 설치 시 설정한 값을 사용합니다.
 
 ## 3. Spring 접속 설정과 실행
 
-`DB_URL` 기본값은 `jdbc:mysql://localhost:3306/school_ai?connectionTimeZone=Asia/Seoul`, `DB_USERNAME` 기본값은 `root`입니다. `DB_PASSWORD`는 필수이며 비밀번호를 YAML에 직접 쓰지 않습니다. `.env` 파일은 Spring이 자동으로 읽지 않습니다.
+`application.yaml`의 기존 `spring.datasource`를 아래처럼 수정합니다. password의 자리표시자를 설치할 때 정한 root 비밀번호로 바꿉니다. 비밀번호는 작은따옴표로 감싸고, 비밀번호 자체에 작은따옴표가 있다면 두 번 적습니다. 예: `ab'cd` → `'ab''cd'`.
 
-PowerShell:
-
-```powershell
-$env:DB_PASSWORD = Read-Host "MySQL root 비밀번호" -MaskInput
-.\gradlew.bat bootRun
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/school_ai?connectionTimeZone=Asia/Seoul
+    username: root
+    password: '본인의_root_비밀번호'
 ```
 
-Windows PowerShell 5.1에서 `-MaskInput`을 지원하지 않으면 다음을 사용합니다.
+터미널에서 DB 비밀번호를 입력하거나 환경변수를 설정할 필요 없이 IntelliJ의 실행 버튼으로 시작합니다. `spring:`을 중복해서 추가하지 말고 기존 datasource 부분을 수정합니다. 명령으로 실행할 때도 비밀번호 입력 없이 아래 명령만 사용합니다.
 
 ```powershell
-$dbSecret = Read-Host "MySQL root 비밀번호" -AsSecureString
-$env:DB_PASSWORD = [System.Net.NetworkCredential]::new("", $dbSecret).Password
 .\gradlew.bat bootRun
 ```
-
-macOS:
 
 ```bash
-read -s 'DB_PASSWORD?MySQL root 비밀번호: '; echo
-export DB_PASSWORD
 ./gradlew bootRun
 ```
 
-IntelliJ 실행 버튼을 사용한다면 Run Configuration의 Environment variables에도 설정합니다. [http://localhost:8081/](http://localhost:8081/)에서 접속합니다. Spring은 8081, MySQL은 3306입니다.
+실제 비밀번호를 적은 application.yaml 변경은 커밋하지 않습니다. 저장소에는 자리표시자만 둡니다. 브랜치를 바꾸기 전에는 로컬 설정을 따로 보관하고, 새 브랜치의 설정에도 비밀번호를 입력합니다.
+
+[http://localhost:8081/](http://localhost:8081/)에서 접속합니다. Spring은 8081, MySQL은 3306입니다.
 
 `schema.sql`은 없는 테이블만 생성합니다. 기존 질문을 지우거나 예제 데이터를 넣지 않습니다. 질문은 MySQL에 남으므로 Spring을 종료·재실행해도 유지됩니다. 번호는 DB의 `AUTO_INCREMENT`가 생성하며 삭제·롤백으로 빈 번호가 생겨도 정상입니다.
 
@@ -114,27 +111,17 @@ root 계정으로 테스트 DB를 생성합니다.
 CREATE DATABASE IF NOT EXISTS school_ai_test CHARACTER SET utf8mb4;
 ```
 
-`DB_PASSWORD`를 설정한 같은 터미널에서 테스트용 접속 주소를 지정합니다. 통합 테스트는 이름이 `_test`로 끝나는 DB에서만 질문을 삭제하며, 일반 수업 DB에 연결하면 삭제 전에 실패합니다. 01·02 브랜치는 DB 설정 없이 테스트합니다.
-
-```powershell
-$env:DB_URL = "jdbc:mysql://localhost:3306/school_ai_test?connectionTimeZone=Asia/Seoul"
-.\gradlew.bat test
-Remove-Item Env:DB_URL
-```
-
-```bash
-DB_URL='jdbc:mysql://localhost:3306/school_ai_test?connectionTimeZone=Asia/Seoul' ./gradlew test
-```
+테스트할 때는 application.yaml의 datasource.url을 `jdbc:mysql://localhost:3306/school_ai_test?connectionTimeZone=Asia/Seoul`로 바꾸고 root 비밀번호를 입력한 뒤 `./gradlew test` 또는 `.\gradlew.bat test`를 실행합니다. 테스트가 끝나면 url을 school_ai로 되돌립니다. 통합 테스트는 이름이 `_test`로 끝나는 DB에서만 질문을 삭제합니다. 01·02 브랜치는 DB 설정 없이 테스트합니다.
 
 RAG 테스트는 시작 시 실제 임베딩 생성을 끄고, AI 응답 테스트 대역과 실제 MySQL을 사용합니다. 일반 실행은 안내문 인덱싱을 수행하므로 Ollama와 모델을 준비해야 합니다. TTS는 기존 Python 서버 준비도 필요합니다.
 
 ## 막혔을 때
 
 - `Connection refused`: MySQL 서비스 실행과 3306 포트 확인.
-- `Access denied`: 사용자·비밀번호·허용 호스트·권한 확인. 설치 시 정한 root 비밀번호와 DB_USERNAME 설정을 확인.
-- `Unknown database`: DB 생성과 `DB_URL` 확인.
-- `DB_PASSWORD` 설정 오류: 실제 실행하는 터미널 또는 IntelliJ 환경변수 확인.
-- 서버 재시작 후 목록이 다름: 같은 `DB_URL`인지 확인. 테스트 DB와 수업 DB를 구분.
+- `Access denied`: 사용자·비밀번호·허용 호스트·권한 확인. 설치 시 정한 root 비밀번호와 application.yaml의 username 설정을 확인.
+- `Unknown database`: DB 생성과 application.yaml의 url 확인.
+- 비밀번호 오류: application.yaml의 password와 MySQL 설치 시 정한 root 비밀번호 확인.
+- 서버 재시작 후 목록이 다름: application.yaml의 url이 같은지 확인. 테스트 DB와 수업 DB를 구분.
 
 ## 버전 기준
 

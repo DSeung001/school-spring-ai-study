@@ -20,8 +20,13 @@ public class QuestionController {
     public Question create(@Valid @RequestBody QuestionRequest request) {
         return service.create(request.content());
     }
+    // keyword가 없거나 비어 있으면 전체 목록. 예: GET /api/questions?keyword=도서관
     @GetMapping
-    public List<Question> findAll() { return service.findAll(); }
+    public List<Question> findAll(@RequestParam(required = false) String keyword) {
+        return service.search(keyword);
+    }
+    @GetMapping("/{id}")
+    public Question findById(@PathVariable long id) { return service.findById(id); }
 
     @PutMapping("/{id}")
     public Question update(@PathVariable long id, @Valid @RequestBody QuestionRequest request) {

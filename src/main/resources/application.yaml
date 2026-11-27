@@ -37,3 +37,4 @@ app:
     모르는 학교 정보는 지어내지 말고 확인이 필요하다고 말한다.
   rag:
     similarity-threshold: 0.50
+    top-k: 3

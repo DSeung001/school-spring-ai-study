@@ -6,8 +6,6 @@ import com.example.rag.model.Source;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.vectorstore.SearchRequest;
-import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,33 +14,20 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class AnswerService {
     private final ChatClient chatClient;
-    private final SimpleVectorStore store;
+    private final NoticeSearchService searchService;
     private final String systemPrompt;
-    private final double threshold;
 
-    public AnswerService(ChatClient.Builder builder, SimpleVectorStore store,
-            @Value("${app.system-prompt}") String systemPrompt,
-            @Value("${app.rag.similarity-threshold:0.50}") double threshold) {
+    public AnswerService(ChatClient.Builder builder, NoticeSearchService searchService,
+            @Value("${app.system-prompt}") String systemPrompt) {
         this.chatClient = builder.build();
-        this.store = store;
+        this.searchService = searchService;
         this.systemPrompt = systemPrompt;
-        this.threshold = threshold;
     }
     public GeneratedAnswer answer(String question) {
-        List<org.springframework.ai.document.Document> found;
-        try {
-            found = store.similaritySearch(SearchRequest.builder().query(question)
-                    .topK(3).similarityThreshold(threshold).build());
-        } catch (RuntimeException error) {
-            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
-                    "안내문 검색에 실패했습니다. 임베딩 모델을 확인해 주세요.");
-        }
-        if (found.isEmpty()) {
+        List<Source> sources = searchService.search(question);
+        if (sources.isEmpty()) {
             return new GeneratedAnswer("안내문에서 근거를 찾지 못했습니다. 담당 선생님께 확인해 주세요.", List.of());
         }
-        List<Source> sources = found.stream().map(d -> new Source(
-                d.getMetadata().get("title").toString(),
-                d.getMetadata().get("chunkId").toString(), d.getText(), d.getScore())).toList();
         String context = sources.stream().map(s -> "[" + s.chunkId() + "] " + s.text())
                 .collect(Collectors.joining("\n\n"));
         String reply;

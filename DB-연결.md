@@ -8,8 +8,8 @@
 | 02-spring-mvc-crud | 2일차 시작: 메모리 등록·조회·입력 검증·ApiErrorHandler | 아니요 |
 | 03-spring-ai | 3일차 시작: DB 기반 MVC CRUD 완성본 | 예 |
 | 04-rag | 4일차 시작: DB 저장과 Ollama 답변 완성본 | 예 |
-| 05-tts-portfolio | 5일차 시작: DB 저장과 RAG·검색 근거 완성본 | 예 |
-| 06-result | 최종본: RAG 답변 듣기까지 완성 | 예 |
+| 05-tts-portfolio | 5일차 시작: DB 저장과 RAG·검색 근거 완성본, 4일차 추가 과제 답안 포함 | 예 |
+| 06-result | 최종본: 4일차 추가 과제 답안과 RAG 답변 듣기까지 완성 | 예 |
 
 1일차에서 ApiErrorHandler까지 완성하며 `02`를 받으면 그 상태로 시작합니다. POST·GET만 있고 DB·화면·수정·삭제는 없습니다. 2일차는 MySQL 설치부터 시작합니다. DB 기반 CRUD 복구용 완성본은 `03`입니다. `03`~`05`의 이름은 그날 배울 개념입니다.
 
@@ -89,9 +89,9 @@ com.example.rag
 ├── RagApplication.java
 ├── controller   HTTP 요청·응답
 ├── service      업무 처리·AI 호출·트랜잭션
-├── repository   QuestionMapper, RAG 단계의 SourceMapper와 SQL
+├── repository   QuestionMapper, RAG 단계의 SourceMapper와 SQL, 추가 과제의 LEFT JOIN 조회
 ├── model        Question, RAG 단계의 Source
-├── dto          QuestionRequest, 이후 GeneratedAnswer·SpeechRequest
+├── dto          QuestionRequest, 이후 GeneratedAnswer·SpeechRequest, 추가 과제의 QuestionSourceRow
 ├── config       RAG 단계의 설정
 ├── exception    ApiErrorHandler
 └── practice     ObjectPractice

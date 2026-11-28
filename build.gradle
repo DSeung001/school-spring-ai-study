@@ -21,7 +21,6 @@ dependencies {
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:4.1.0'
     runtimeOnly 'com.mysql:mysql-connector-j'
 
-	implementation 'org.springframework.boot:spring-boot-starter-restclient'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	implementation platform('org.springframework.ai:spring-ai-bom:2.1.0')

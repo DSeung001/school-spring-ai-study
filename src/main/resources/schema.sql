@@ -15,3 +15,12 @@ CREATE TABLE IF NOT EXISTS question_sources (
     CONSTRAINT fk_question_sources_question FOREIGN KEY (question_id)
         REFERENCES questions(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS comments (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    question_id BIGINT NOT NULL,
+    content VARCHAR(100) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_comments_question FOREIGN KEY (question_id)
+        REFERENCES questions(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -38,5 +38,3 @@ app:
   rag:
     similarity-threshold: 0.50
     top-k: 3
-  voice:
-    tts-url: ${TTS_BASE_URL:http://localhost:8001}

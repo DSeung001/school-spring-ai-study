@@ -8,8 +8,8 @@
 | 02-spring-mvc-crud | 2일차 시작: 메모리 등록·조회·입력 검증·ApiErrorHandler | 아니요 |
 | 03-spring-ai | 3일차 시작: DB 기반 MVC CRUD 완성본 | 예 |
 | 04-rag | 4일차 시작: DB 저장과 Ollama 답변 완성본 | 예 |
-| 05-tts-portfolio | 5일차 시작: DB 저장과 RAG·검색 근거 완성본 | 예 |
-| 06-result | 최종본: RAG 답변 듣기까지 완성 | 예 |
+| 05-tts-portfolio | 5일차 시작: DB 저장과 RAG·검색 근거 완성본. 익명 댓글 과제 시작 | 예 |
+| 06-result | 최종본: RAG와 5일차 익명 댓글(등록·조회·삭제)까지 완성 | 예 |
 
 1일차에서 ApiErrorHandler까지 완성하며 `02`를 받으면 그 상태로 시작합니다. POST·GET만 있고 DB·화면·수정·삭제는 없습니다. 2일차는 MySQL 설치부터 시작합니다. DB 기반 CRUD 복구용 완성본은 `03`입니다. `03`~`05`의 이름은 그날 배울 개념입니다.
 
@@ -90,8 +90,8 @@ com.example.rag
 ├── controller   HTTP 요청·응답
 ├── service      업무 처리·AI 호출·트랜잭션
 ├── repository   QuestionMapper, RAG 단계의 SourceMapper와 SQL
-├── model        Question, RAG 단계의 Source
-├── dto          QuestionRequest, 이후 GeneratedAnswer·SpeechRequest
+├── model        Question, RAG 단계의 Source, 5일차의 Comment
+├── dto          QuestionRequest, 이후 GeneratedAnswer, 5일차의 CommentRequest
 ├── config       RAG 단계의 설정
 ├── exception    ApiErrorHandler
 └── practice     ObjectPractice
@@ -113,7 +113,7 @@ CREATE DATABASE IF NOT EXISTS school_ai_test CHARACTER SET utf8mb4;
 
 테스트할 때는 application.yaml의 datasource.url을 `jdbc:mysql://localhost:3306/school_ai_test?connectionTimeZone=Asia/Seoul`로 바꾸고 root 비밀번호를 입력한 뒤 `./gradlew test` 또는 `.\gradlew.bat test`를 실행합니다. 테스트가 끝나면 url을 school_ai로 되돌립니다. 통합 테스트는 이름이 `_test`로 끝나는 DB에서만 질문을 삭제합니다. 01·02 브랜치는 DB 설정 없이 테스트합니다.
 
-RAG 테스트는 시작 시 실제 임베딩 생성을 끄고, AI 응답 테스트 대역과 실제 MySQL을 사용합니다. 일반 실행은 안내문 인덱싱을 수행하므로 Ollama와 모델을 준비해야 합니다. TTS는 기존 Python 서버 준비도 필요합니다.
+RAG 테스트는 시작 시 실제 임베딩 생성을 끄고, AI 응답 테스트 대역과 실제 MySQL을 사용합니다. 일반 실행은 안내문 인덱싱을 수행하므로 Ollama와 모델을 준비해야 합니다.
 
 ## 막혔을 때
 

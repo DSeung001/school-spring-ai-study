@@ -1,14 +1,14 @@
-# 5일차-1: 답변 듣기·오디오 재생
+# 5일차-1: 익명 댓글 등록·조회
 
-교안: `5일차 포트폴리오화.md` → **3. 응답에 TTS 연결**.
+교안: `5일차 포트폴리오화.md` → **2. 과제: 익명 댓글**.
 
 ## 변경 목적
 
-답변 듣기·오디오 재생 기능을 적용하는 완성 HTML·JS입니다.
+질문마다 익명 댓글 목록과 입력칸을 붙이는 완성 HTML·JS입니다. 과제에서는 화면을 제공하고 학생은 SQL과 Spring 백엔드를 구현합니다.
 
 ## 적용 준비
 
-RAG API와 POST /api/voice/tts 구현 완료. 05-tts-portfolio에서 5일차 2절까지 진행하거나 06-result의 백엔드를 사용합니다. Ollama와 TTS 서버도 준비합니다.
+`POST /api/questions/{questionId}/comments`, `GET /api/questions/{questionId}/comments` 구현. 05-tts-portfolio에서 과제를 진행하거나 06-result의 백엔드를 사용합니다. 백엔드를 만들기 전에 적용하면 댓글 칸에 `댓글을 불러오지 못했습니다. HTTP 404`가 나오며, 질문 등록·조회는 그대로 동작합니다.
 
 적용 방법은 [퍼블리싱 안내](../README.md#적용-방법)를 따릅니다. 두 파일을 함께 복사하세요.
 
@@ -19,20 +19,15 @@ RAG API와 POST /api/voice/tts 구현 완료. 05-tts-portfolio에서 5일차 2�
 ```diff
 --- 4일차-1/index.html
 +++ 5일차-1/index.html
-@@ -19,9 +19,12 @@
-     <textarea id="content" maxlength="200" required></textarea>
-     <button id="send" type="submit">질문 보내기</button>
-   </form>
-+  <section aria-label="음성 출력">
-+    <p>답변의 듣기 버튼을 누르면 음성을 만듭니다.</p>
-+    <audio id="player" controls></audio>
-+  </section>
-   <p id="status" role="status" aria-live="polite"></p>
-   <ul id="questions"></ul>
--  <!-- static 폴더 파일은 Spring이 그대로 내려 줌. 이 파일은 http://localhost:8081/, app.js는 /app.js로 열림 -->
-   <script src="/app.js" defer></script>
- </body>
- </html>
+@@ -10,6 +10,8 @@
+     li { border-bottom: 1px solid #bbb; padding: 16px 0; white-space: pre-wrap; }
+     button { margin: 4px; padding: 8px; }
+     #status { min-height: 24px; }
++    .comments li { border: 0; padding: 4px 0; }
++    .comment-form input { width: 60%; padding: 8px; }
+   </style>
+ </head>
+ <body>
 ```
 
 ### `app.js`
@@ -40,58 +35,59 @@ RAG API와 POST /api/voice/tts 구현 완료. 05-tts-portfolio에서 5일차 2�
 ```diff
 --- 4일차-1/app.js
 +++ 5일차-1/app.js
-@@ -58,6 +58,10 @@
+@@ -58,9 +58,52 @@
        } catch (error) { statusBox.textContent = error.message; }
      });
      item.append(edit, remove);
-+    const speak = document.createElement('button');
-+    speak.textContent = '답변 듣기';
-+    speak.addEventListener('click', () => playAnswer(question.answer, speak));
-+    item.append(speak);
++    item.append(commentBox(question.id));
      list.append(item);
    }
  }
-@@ -75,3 +79,40 @@
-   finally { send.disabled = false; }
- });
- loadQuestions().catch(error => { statusBox.textContent = error.message; });
++// 질문마다 익명 댓글 목록과 입력칸을 만듦. 댓글은 질문 번호가 들어간 주소로 따로 요청함.
++function commentBox(questionId) {
++  const box = document.createElement('section');
++  box.setAttribute('aria-label', `#${questionId} 질문의 댓글`);
++  const comments = document.createElement('ul');
++  comments.className = 'comments';
++  const commentForm = document.createElement('form');
++  commentForm.className = 'comment-form';
++  const commentInput = document.createElement('input');
++  commentInput.maxLength = 100;
++  commentInput.placeholder = '익명 댓글 (1~100자)';
++  const add = document.createElement('button');
++  add.type = 'submit';
++  add.textContent = '댓글 등록';
++  commentForm.append(commentInput, add);
++  box.append(comments, commentForm);
 +
-+const player = document.querySelector('#player');
-+let audioUrl = null;
-+async function playAnswer(text, button) {
-+  if (text.length > 1000) {
-+    statusBox.textContent = '답변이 1000자를 넘어 읽을 수 없습니다. 더 짧은 답변으로 질문해 주세요.';
-+    return;
++  async function loadComments() {
++    const found = await request(`/api/questions/${questionId}/comments`);
++    comments.replaceChildren();
++    for (const comment of found) {
++      const row = document.createElement('li');
++      // createdAt 예: 2026-11-30T10:15:00 → 2026-11-30 10:15
++      row.textContent = `익명 · ${comment.createdAt.replace('T', ' ').slice(0, 16)}\n${comment.content}`;
++      comments.append(row);
++    }
 +  }
-+  button.disabled = true;
-+  statusBox.textContent = '음성을 만들고 있습니다.';
-+  try {
-+    const response = await fetch('/api/voice/tts', {
-+      method: 'POST', headers: { 'Content-Type': 'application/json' },
-+      body: JSON.stringify({ text })
-+    });
-+    if (!response.ok) {
-+      const error = await response.json();
-+      throw new Error(error.message || '음성 생성 실패');
-+    }
-+    const blob = await response.blob();
-+    player.pause();
-+    if (audioUrl) URL.revokeObjectURL(audioUrl);
-+    audioUrl = URL.createObjectURL(blob);
-+    player.src = audioUrl;
++  commentForm.addEventListener('submit', async event => {
++    event.preventDefault();
++    if (!commentInput.value.trim()) { statusBox.textContent = '댓글을 입력해 주세요.'; return; }
++    add.disabled = true;
 +    try {
-+      await player.play();
-+      statusBox.textContent = '답변을 재생합니다.';
-+    } catch {
-+      statusBox.textContent = '아래 오디오 재생 버튼을 눌러 들어 주세요.';
-+    }
-+  } catch (error) { statusBox.textContent = error.message; }
-+  finally { button.disabled = false; }
++      await request(`/api/questions/${questionId}/comments`, jsonOptions('POST', commentInput.value));
++      commentInput.value = '';
++      await loadComments();
++      statusBox.textContent = '댓글을 등록했습니다.';
++    } catch (error) { statusBox.textContent = error.message; }
++    finally { add.disabled = false; }
++  });
++  loadComments().catch(error => { comments.textContent = `댓글을 불러오지 못했습니다. ${error.message}`; });
++  return box;
 +}
-+player.addEventListener('error', () => {
-+  statusBox.textContent = '오디오를 재생하지 못했습니다. 다시 생성하거나 브라우저 설정을 확인해 주세요.';
-+});
-+window.addEventListener('beforeunload', () => { if (audioUrl) URL.revokeObjectURL(audioUrl); });
+ form.addEventListener('submit', async event => {
+   event.preventDefault();
+   if (!input.value.trim()) { statusBox.textContent = '질문을 입력해 주세요.'; return; }
 ```
 
 ## 적용 후 전체 코드
@@ -111,6 +107,8 @@ RAG API와 POST /api/voice/tts 구현 완료. 05-tts-portfolio에서 5일차 2�
     li { border-bottom: 1px solid #bbb; padding: 16px 0; white-space: pre-wrap; }
     button { margin: 4px; padding: 8px; }
     #status { min-height: 24px; }
+    .comments li { border: 0; padding: 4px 0; }
+    .comment-form input { width: 60%; padding: 8px; }
   </style>
 </head>
 <body>
@@ -120,12 +118,9 @@ RAG API와 POST /api/voice/tts 구현 완료. 05-tts-portfolio에서 5일차 2�
     <textarea id="content" maxlength="200" required></textarea>
     <button id="send" type="submit">질문 보내기</button>
   </form>
-  <section aria-label="음성 출력">
-    <p>답변의 듣기 버튼을 누르면 음성을 만듭니다.</p>
-    <audio id="player" controls></audio>
-  </section>
   <p id="status" role="status" aria-live="polite"></p>
   <ul id="questions"></ul>
+  <!-- static 폴더 파일은 Spring이 그대로 내려 줌. 이 파일은 http://localhost:8081/, app.js는 /app.js로 열림 -->
   <script src="/app.js" defer></script>
 </body>
 </html>
@@ -194,12 +189,51 @@ async function loadQuestions() {
       } catch (error) { statusBox.textContent = error.message; }
     });
     item.append(edit, remove);
-    const speak = document.createElement('button');
-    speak.textContent = '답변 듣기';
-    speak.addEventListener('click', () => playAnswer(question.answer, speak));
-    item.append(speak);
+    item.append(commentBox(question.id));
     list.append(item);
   }
+}
+// 질문마다 익명 댓글 목록과 입력칸을 만듦. 댓글은 질문 번호가 들어간 주소로 따로 요청함.
+function commentBox(questionId) {
+  const box = document.createElement('section');
+  box.setAttribute('aria-label', `#${questionId} 질문의 댓글`);
+  const comments = document.createElement('ul');
+  comments.className = 'comments';
+  const commentForm = document.createElement('form');
+  commentForm.className = 'comment-form';
+  const commentInput = document.createElement('input');
+  commentInput.maxLength = 100;
+  commentInput.placeholder = '익명 댓글 (1~100자)';
+  const add = document.createElement('button');
+  add.type = 'submit';
+  add.textContent = '댓글 등록';
+  commentForm.append(commentInput, add);
+  box.append(comments, commentForm);
+
+  async function loadComments() {
+    const found = await request(`/api/questions/${questionId}/comments`);
+    comments.replaceChildren();
+    for (const comment of found) {
+      const row = document.createElement('li');
+      // createdAt 예: 2026-11-30T10:15:00 → 2026-11-30 10:15
+      row.textContent = `익명 · ${comment.createdAt.replace('T', ' ').slice(0, 16)}\n${comment.content}`;
+      comments.append(row);
+    }
+  }
+  commentForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!commentInput.value.trim()) { statusBox.textContent = '댓글을 입력해 주세요.'; return; }
+    add.disabled = true;
+    try {
+      await request(`/api/questions/${questionId}/comments`, jsonOptions('POST', commentInput.value));
+      commentInput.value = '';
+      await loadComments();
+      statusBox.textContent = '댓글을 등록했습니다.';
+    } catch (error) { statusBox.textContent = error.message; }
+    finally { add.disabled = false; }
+  });
+  loadComments().catch(error => { comments.textContent = `댓글을 불러오지 못했습니다. ${error.message}`; });
+  return box;
 }
 form.addEventListener('submit', async event => {
   event.preventDefault();
@@ -215,47 +249,11 @@ form.addEventListener('submit', async event => {
   finally { send.disabled = false; }
 });
 loadQuestions().catch(error => { statusBox.textContent = error.message; });
-
-const player = document.querySelector('#player');
-let audioUrl = null;
-async function playAnswer(text, button) {
-  if (text.length > 1000) {
-    statusBox.textContent = '답변이 1000자를 넘어 읽을 수 없습니다. 더 짧은 답변으로 질문해 주세요.';
-    return;
-  }
-  button.disabled = true;
-  statusBox.textContent = '음성을 만들고 있습니다.';
-  try {
-    const response = await fetch('/api/voice/tts', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text })
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || '음성 생성 실패');
-    }
-    const blob = await response.blob();
-    player.pause();
-    if (audioUrl) URL.revokeObjectURL(audioUrl);
-    audioUrl = URL.createObjectURL(blob);
-    player.src = audioUrl;
-    try {
-      await player.play();
-      statusBox.textContent = '답변을 재생합니다.';
-    } catch {
-      statusBox.textContent = '아래 오디오 재생 버튼을 눌러 들어 주세요.';
-    }
-  } catch (error) { statusBox.textContent = error.message; }
-  finally { button.disabled = false; }
-}
-player.addEventListener('error', () => {
-  statusBox.textContent = '오디오를 재생하지 못했습니다. 다시 생성하거나 브라우저 설정을 확인해 주세요.';
-});
-window.addEventListener('beforeunload', () => { if (audioUrl) URL.revokeObjectURL(audioUrl); });
 ```
 
 ## 실행 확인
 
-답변 듣기로 음성 요청·재생을 확인합니다. TTS 서버 중단 시 오류와 버튼 복구, 1000자 초과 시 요청 차단, 자동 재생 거절 시 수동 재생 안내를 확인합니다.
-
-외부 AI·음성 결과는 실제 서버 연결 후 별도로 확인합니다.
+1. 질문을 하나 등록하면 그 아래에 빈 댓글 목록과 입력칸이 나옵니다. Network에서 `GET /api/questions/1/comments` 응답이 `[]`인지 봅니다.
+2. 댓글을 등록하면 `POST /api/questions/1/comments`가 201로 응답하고 `익명 · 작성 시각`과 내용이 목록에 나옵니다.
+3. 공백만 입력하면 요청 없이 안내가 나옵니다. 입력칸은 100자까지만 입력됩니다.
+4. 다른 질문의 댓글 목록에는 섞이지 않습니다. 새로고침해도 댓글이 남습니다.
